@@ -39,7 +39,7 @@ public class Main extends Application {
 
 /* 
 
-Resumen de Clases
+Resumen de Clases hola
 Main: Clase principal que inicia la aplicación JavaFX.
 UmlClass: Representa una clase UML con atributos y métodos.
 UmlAttribute: Define un atributo en una clase UML, con nombre, tipo y visibilidad.
