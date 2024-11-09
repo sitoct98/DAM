@@ -1,0 +1,5 @@
+package app;
+
+public enum UmlRelationType {
+    ASSOCIATION, AGGREGATION, COMPOSITION, INHERITANCE, REALIZATION, DEPENDENCY
+}
