@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TitledPane?>
+
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="controlador.UmlEditorController" style="-fx-padding: 10;">
+    <top>
+        <HBox spacing="2" style="-fx-padding: 10;">
+            <Button fx:id="addClassButton" onAction="#handleAddClass" prefWidth="200" prefHeight="40">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <image>
+                            <Image url="@/vista/add_icon.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Añadir una nueva clase"/>
+                </tooltip>
+                <text>
+                    Añadir Clase
+                </text>
+            </Button>
+            
+             <!-- Botón para guardar -->
+            <Button fx:id="saveButton" onAction="#handleSave" prefWidth="200" prefHeight="40">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <image>
+                            <Image url="@/vista/save_icon.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Guardar esquema actual"/>
+                </tooltip>
+                <text>Guardar</text>
+            </Button>
+
+            <!-- Botón para cargar -->
+            <Button fx:id="loadButton" onAction="#handleLoad" prefWidth="200" prefHeight="40">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <image>
+                            <Image url="@/vista/load_icon.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Cargar esquema desde archivo"/>
+                </tooltip>
+                <text>Cargar</text>
+            </Button>
+            
+            <Button fx:id="addRelationButton" onAction="#handleAddRelation" prefWidth="200" prefHeight="40">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <image>
+                            <Image url="@/vista/add_relation_icon.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Añadir una nueva relación entre clases"/>
+                </tooltip>
+                <text>
+                    Añadir Relación
+                </text>
+            </Button>
+            <Button fx:id="deleteRelation" onAction="#handleShowRelations" prefWidth="200" prefHeight="40">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <image>
+                            <Image url="@/vista/delete_relation.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Eliminar una relacion"/>
+                </tooltip>
+                <text>
+                    Eliminar relación
+                </text>
+            </Button>
+        </HBox>
+    </top>
+    <center>
+        <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="true">
+            <Pane fx:id="drawingArea" 
+          style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2px;"
+          VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"
+          minHeight="400" minWidth="600"/>
+        </ScrollPane>    
+    </center>
+    <right>
+        <VBox style="-fx-padding: 10;">
+            <Label text="Lista de Clases" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 5;"/>
+            <ListView fx:id="classListView" VBox.vgrow="ALWAYS"/>
+            <Label text="Lista de Métodos" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 5;"/>
+            <ListView fx:id="methodListView" VBox.vgrow="ALWAYS"/>
+        
+            <!-- Leyenda -->
+            <TitledPane text="Notación UML" collapsible="true" animated="true" expanded="false" >
+                <content>
+                    <VBox>
+                        <Label text="Asociación: Línea continua azul"/>
+                        <Label text="Agregación: Línea discontinua negra"/>
+                        <Label text="Composición: Línea negra con diamante negro lleno"/>
+                        <Label text="Herencia: Línea gris punteada"/>
+                        <Label text="Realización: Línea discontinua verde"/>
+                        <Label text="Dependencia: Línea discontinua naranja "/>   
+                    </VBox>
+                </content>
+            </TitledPane>
+            <TitledPane text="Visibilidad" collapsible="true" animated="true" expanded="false" >
+                <content>
+                    <VBox>
+                        <Label text="Notación UML de Visibilidad:"/>
+                        <Label text="+ Público"/>
+                        <Label text="- Privado"/>
+                        <Label text="# Protegido"/>
+                        <Label text="~ Paquete"/>
+                    </VBox>
+                </content>
+            </TitledPane>
+        
+        </VBox>
+    </right>
+</BorderPane>
