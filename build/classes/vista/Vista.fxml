@@ -31,6 +31,7 @@
                     Añadir Clase
                 </text>
             </Button>
+            
             <Button fx:id="addRelationButton" onAction="#handleAddRelation" prefWidth="200" prefHeight="40">
                 <graphic>
                     <ImageView fitWidth="20" fitHeight="20">
@@ -60,6 +61,36 @@
                 <text>
                     Eliminar relación
                 </text>
+            </Button>
+
+            <!-- Botón para guardar -->
+            <Button fx:id="saveButton" onAction="#handleSave" prefWidth="200" prefHeight="40">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <image>
+                            <Image url="@/vista/save_icon.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Guardar esquema actual"/>
+                </tooltip>
+                <text>Guardar</text>
+            </Button>
+
+            <!-- Botón para cargar -->
+            <Button fx:id="loadButton" onAction="#handleLoad" prefWidth="200" prefHeight="40">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <image>
+                            <Image url="@/vista/load_icon.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Cargar esquema desde archivo"/>
+                </tooltip>
+                <text>Cargar</text>
             </Button>
         </HBox>
     </top>

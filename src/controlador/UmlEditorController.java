@@ -1,35 +1,28 @@
 package controlador;
 
-import app.UmlAttribute;
-import app.UmlClass;
-import app.UmlMethod;
-import app.UmlRelation;
-import app.UmlRelationType;
-import app.Visibility;
-import java.util.ArrayList;
+import app.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.*;
+import javafx.stage.FileChooser;
+import javafx.util.Pair;
+import org.w3c.dom.Document;
+
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.control.MenuItem;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.LineTo;
-import javafx.scene.paint.Color;
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.ClosePath;
-import javafx.scene.shape.PathElement;
-import javafx.util.Pair;
 
 public class UmlEditorController {
 
@@ -40,8 +33,8 @@ public class UmlEditorController {
     @FXML
     private ListView<String> methodListView;
     @FXML
-    private ScrollPane scrollPane;    
-    
+    private ScrollPane scrollPane;
+
     private List<UmlClass> classes = new ArrayList<>();
     private List<UmlRelation> relations = new ArrayList<>();
     private ContextMenu currentContextMenu;
@@ -49,8 +42,7 @@ public class UmlEditorController {
     @FXML
     public void initialize() {
         updateClassListView();
-        
-        
+
         // Hacer el drawing area scrolleable
         scrollPane.setContent(drawingArea);
         scrollPane.setPannable(true);
@@ -61,9 +53,9 @@ public class UmlEditorController {
         classListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             // Buscar la clase seleccionada basándose en el nombre de la clase
             UmlClass selectedClass = classes.stream()
-                                            .filter(umlClass -> umlClass.getName().equals(newValue))
-                                            .findFirst()
-                                            .orElse(null);
+                    .filter(umlClass -> umlClass.getName().equals(newValue))
+                    .findFirst()
+                    .orElse(null);
             // Actualizar la ListView de métodos con los métodos de la clase seleccionada
             if (selectedClass != null) {
                 updateMethodListView(selectedClass);
@@ -79,8 +71,7 @@ public class UmlEditorController {
                 currentContextMenu = null; // Elimina la referencia
             }
         });
-        
-        
+
     }
 
     // Boton añadir clase
@@ -92,7 +83,7 @@ public class UmlEditorController {
         drawClassOnCanvas(newClass);
         updateClassListView();
     }
-    
+
     // Boton añadir relacion
     @FXML
     private void handleAddRelation() {
@@ -149,7 +140,7 @@ public class UmlEditorController {
             showAlert("Error de Relación", "Debe seleccionar dos clases diferentes para crear una relación.");
         }
     }
-    
+
     // Boton eliminar relacion
     @FXML
     private void handleShowRelations() {
@@ -159,9 +150,9 @@ public class UmlEditorController {
         } else {
             // Crear una lista de representaciones String de cada relación
             List<String> relationDescriptions = relations.stream()
-                    .map(relation -> relation.getFromClass().getName() + " -> " + 
-                    relation.getToClass().getName() + " : " + 
-                    relation.getType())
+                    .map(relation -> relation.getFromClass().getName() + " -> "
+                    + relation.getToClass().getName() + " : "
+                    + relation.getType())
                     .collect(Collectors.toList());
 
             ChoiceDialog<String> dialog = new ChoiceDialog<>(null, relationDescriptions);
@@ -182,7 +173,7 @@ public class UmlEditorController {
             });
         }
     }
-    
+
     // Eliminar linea de la relacion
     private void deleteRelation(UmlRelation relation) {
         // Remover la línea y la flecha del área de dibujo
@@ -190,7 +181,7 @@ public class UmlEditorController {
         // Remover la relación de la lista
         relations.remove(relation);
     }
-    
+
     // Metodo auxiliar para el dialogo de handleAddRelation
     private UmlClass chooseClass(String title, String header) {
         ChoiceDialog<UmlClass> dialog = new ChoiceDialog<>(null, classes);
@@ -200,7 +191,7 @@ public class UmlEditorController {
         Optional<UmlClass> result = dialog.showAndWait();
         return result.orElse(null);
     }
-    
+
     // Menu click derecho
     private void showContextMenu(UmlClass umlClass, double screenX, double screenY) {
         // Si hay un menu abierto cierralo
@@ -209,12 +200,12 @@ public class UmlEditorController {
         }
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(
-            createMenuItem("Editar Clase", () -> editClass(umlClass), "edit_icon.png"),
-            createMenuItem("Eliminar Clase", () -> deleteClass(umlClass), "delete_icon.png"),
-            createMenuItem("Añadir Método", () -> addMethodToClass(umlClass), "add_method_icon.png"),
-            createMenuItem("Eliminar Método", () -> deleteMethodFromClass(umlClass), "delete_method_icon.png"),
-            createMenuItem("Añadir Atributo", () -> addAttributeToClass(umlClass), "add_atb.png"),
-            createMenuItem("Eliminar Atributo", () -> deleteAttributeFromClass(umlClass), "delete_atb.png")
+                createMenuItem("Editar Clase", () -> editClass(umlClass), "edit_icon.png"),
+                createMenuItem("Eliminar Clase", () -> deleteClass(umlClass), "delete_icon.png"),
+                createMenuItem("Añadir Método", () -> addMethodToClass(umlClass), "add_method_icon.png"),
+                createMenuItem("Eliminar Método", () -> deleteMethodFromClass(umlClass), "delete_method_icon.png"),
+                createMenuItem("Añadir Atributo", () -> addAttributeToClass(umlClass), "add_atb.png"),
+                createMenuItem("Eliminar Atributo", () -> deleteAttributeFromClass(umlClass), "delete_atb.png")
         );
         currentContextMenu = contextMenu; // Guarda la referencia al menú actual
         contextMenu.show(drawingArea, screenX, screenY);
@@ -279,7 +270,7 @@ public class UmlEditorController {
             showAlert("Error", "No se pudo eliminar la clase: " + e.getMessage());
         }
     }
-    
+
     private void addMethodToClass(UmlClass umlClass) {
         Dialog<Pair<String, Visibility>> dialog = new Dialog<>();
         dialog.setTitle("Añadir Método");
@@ -336,9 +327,9 @@ public class UmlEditorController {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(name -> {
             UmlMethod methodToRemove = umlClass.getMethods().stream()
-                .filter(method -> method.getName().equals(name))
-                .findFirst()
-                .orElse(null);
+                    .filter(method -> method.getName().equals(name))
+                    .findFirst()
+                    .orElse(null);
             if (methodToRemove != null) {
                 umlClass.removeMethod(methodToRemove);
                 updateMethodListView(umlClass);
@@ -402,8 +393,8 @@ public class UmlEditorController {
 
     private void deleteAttributeFromClass(UmlClass umlClass) {
         List<String> attributeNames = umlClass.getAttributes().stream()
-                                               .map(UmlAttribute::getName)
-                                               .collect(Collectors.toList());
+                .map(UmlAttribute::getName)
+                .collect(Collectors.toList());
         ChoiceDialog<String> dialog = new ChoiceDialog<>(null, attributeNames);
         dialog.setTitle("Eliminar Atributo");
         dialog.setHeaderText("Seleccione el atributo a eliminar de " + umlClass.getName());
@@ -411,9 +402,9 @@ public class UmlEditorController {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(name -> {
             UmlAttribute attributeToRemove = umlClass.getAttributes().stream()
-                .filter(attribute -> attribute.getName().equals(name))
-                .findFirst()
-                .orElse(null);
+                    .filter(attribute -> attribute.getName().equals(name))
+                    .findFirst()
+                    .orElse(null);
 
             if (attributeToRemove != null) {
                 umlClass.removeAttribute(attributeToRemove);
@@ -427,13 +418,13 @@ public class UmlEditorController {
         classListView.setItems(FXCollections.observableArrayList(classes.stream().map(UmlClass::getName).collect(Collectors.toList())));
         classListView.refresh();
     }
-    
+
     private void updateMethodListView(UmlClass umlClass) {
         if (umlClass != null) {
             // Convertir los métodos de la clase en una lista observable y asignarla a la ListView de métodos
             List<String> methodInfos = umlClass.getMethods().stream()
-                                           .map(method -> method.getVisibility().getSymbol() + " " + method.getName() + "()") // Incluye el símbolo de visibilidad
-                                           .collect(Collectors.toList());
+                    .map(method -> method.getVisibility().getSymbol() + " " + method.getName() + "()") // Incluye el símbolo de visibilidad
+                    .collect(Collectors.toList());
             methodListView.setItems(FXCollections.observableArrayList(methodInfos));
         } else {
             // Si umlClass es null, limpiar la ListView de métodos
@@ -441,7 +432,7 @@ public class UmlEditorController {
         }
         methodListView.refresh(); // Refrescar la vista para mostrar los cambios
     }
-    
+
     private void updateClassInCanvas(UmlClass umlClass) {
         for (Node node : drawingArea.getChildren()) {
             if (node instanceof VBox && umlClass.equals(((VBox) node).getUserData())) {
@@ -484,7 +475,7 @@ public class UmlEditorController {
             }
         }
     }
-    
+
     // Alerta
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -493,49 +484,37 @@ public class UmlEditorController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-    
+
     private Point2D dragAnchor = new Point2D(0, 0);
 
-    private void drawClassOnCanvas(UmlClass umlClass) {
-        VBox classBox = new VBox();
-        classBox.setStyle("-fx-border-color: black; -fx-background-color: lightgray;");
-        classBox.setUserData(umlClass);
+private void drawClassOnCanvas(UmlClass umlClass) {
+    VBox classBox = new VBox();
+    classBox.setStyle("-fx-border-color: black; -fx-background-color: lightgray;");
+    classBox.setUserData(umlClass);
 
-        double canvasWidth = drawingArea.getWidth();
-        double canvasHeight = drawingArea.getHeight();
-        double classWidth = 200; // Ancho predeterminado para la clase
-        double classHeight = 100; // Alto predeterminado para la clase
-        double posX = (canvasWidth - classWidth) / 2; // Posición inicial X centrada
-        double posY = (canvasHeight - classHeight) / 2; // Posición inicial Y centrada
+    // Usar la posición guardada en lugar de centrar la clase en el lienzo
+    classBox.setLayoutX(umlClass.getPosX());
+    classBox.setLayoutY(umlClass.getPosY());
 
-        // Ajustar la posición para asegurar que la clase se dibuje dentro del área visible
-        posX = Math.max(posX, 0);
-        posY = Math.max(posY, 0);
-        posX = Math.min(posX, canvasWidth - classWidth);
-        posY = Math.min(posY, canvasHeight - classHeight);
+    Label classNameLabel = new Label(umlClass.getName());
+    classNameLabel.setStyle("-fx-font-weight: bold; -fx-padding: 5;");
+    classBox.getChildren().add(classNameLabel);
 
-        classBox.setLayoutX(posX);
-        classBox.setLayoutY(posY);
+    VBox methodBox = new VBox();
+    methodBox.setStyle("-fx-padding: 5;");
+    for (UmlMethod method : umlClass.getMethods()) {
+        Label methodLabel = new Label(method.getName() + "()");
+        methodBox.getChildren().add(methodLabel);
+    }
+    classBox.getChildren().add(methodBox);
 
-        Label classNameLabel = new Label(umlClass.getName());
-        classNameLabel.setStyle("-fx-font-weight: bold; -fx-padding: 5;");
-        classBox.getChildren().add(classNameLabel);
-
-        VBox methodBox = new VBox();
-        methodBox.setStyle("-fx-padding: 5;");
-        for (UmlMethod method : umlClass.getMethods()) {
-            Label methodLabel = new Label(method.getName() + "()");
-            methodBox.getChildren().add(methodLabel);
+    // Manejar el arrastre de clase solo con clic izquierdo
+    classBox.setOnMousePressed(event -> {
+        if (event.getButton() == MouseButton.PRIMARY) {
+            dragAnchor = new Point2D(event.getSceneX() - classBox.getLayoutX(), event.getSceneY() - classBox.getLayoutY());
+            event.consume();
         }
-        classBox.getChildren().add(methodBox);
-
-        // Manejar el arrastre de clase solo con clic izquierdo
-        classBox.setOnMousePressed(event -> {
-            if (event.getButton() == MouseButton.PRIMARY) {
-                dragAnchor = new Point2D(event.getSceneX() - classBox.getLayoutX(), event.getSceneY() - classBox.getLayoutY());
-                event.consume();
-            }
-        });
+    });
 
     classBox.setOnMouseDragged(event -> {
         try {
@@ -553,9 +532,13 @@ public class UmlEditorController {
                 classBox.setLayoutX(newX);
                 classBox.setLayoutY(newY);
 
+                // Actualiza la posición en el objeto UmlClass
+                umlClass.setPosX(newX);
+                umlClass.setPosY(newY);
+
                 // Actualiza las relaciones de esta clase
                 updateRelationsForClass(umlClass);
-        
+
                 event.consume();
             }
         } catch (Exception e) {
@@ -563,17 +546,17 @@ public class UmlEditorController {
         }
     });
 
-        // Asignar el menú contextual directamente al VBox para el clic derecho
-        classBox.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
-                showContextMenu(umlClass, event.getScreenX(), event.getScreenY());
-                event.consume();
-            }
-        });
+    // Asignar el menú contextual directamente al VBox para el clic derecho
+    classBox.setOnMouseClicked(event -> {
+        if (event.getButton() == MouseButton.SECONDARY) {
+            showContextMenu(umlClass, event.getScreenX(), event.getScreenY());
+            event.consume();
+        }
+    });
 
-        drawingArea.getChildren().add(classBox);
-    }
-       
+    drawingArea.getChildren().add(classBox);
+}
+
     // Apariencia de la línea
     private void drawRelation(UmlRelation relation) {
         VBox fromClassBox = getClassBox(relation.getFromClass());
@@ -601,7 +584,7 @@ public class UmlEditorController {
             placeCardinalityLabel(relation, startPos, endPos); // Coloca la etiqueta en su posición
         }
     }
-    
+
     // Método para configurar el aspecto de la línea según el tipo de relación
     private void configureLineAppearance(Line line, UmlRelationType type) {
         switch (type) {
@@ -643,14 +626,14 @@ public class UmlEditorController {
         } else {
             arrowHead.setFill(null); // Sin relleno específico para otros tipos
         }
-    }    
-    
+    }
+
     // Actualizar la linea de la flecha
     private void updateRelationsForClass(UmlClass umlClass) {
         // Encuentra todas las relaciones de esta clase y actualiza sus posiciones
         relations.stream()
-            .filter(rel -> rel.getFromClass().equals(umlClass) || rel.getToClass().equals(umlClass))
-            .forEach(this::updateRelationPosition);
+                .filter(rel -> rel.getFromClass().equals(umlClass) || rel.getToClass().equals(umlClass))
+                .forEach(this::updateRelationPosition);
     }
 
     // Actualizar la posición de la relación y la cardinalidad
@@ -680,7 +663,6 @@ public class UmlEditorController {
             showAlert("Error de Actualización de Relación", "No se puede actualizar la relación: " + e.getLocalizedMessage());
         }
     }
-
 
     // Cabeza de la flecha
     private List<PathElement> createArrowShape(Point2D start, Point2D end, UmlRelationType type) {
@@ -726,19 +708,19 @@ public class UmlEditorController {
                         tip.getY() - arrowHeadSize * sin + arrowHeadSize * cos
                 );
                 break;
-                    // Otras formas de flechas pueden ser añadidas aquí.
-                default:
-                    // Forma por defecto de la flecha si no se especifica un tipo conocido.
-                    left = new Point2D(
-                            tip.getX() - arrowHeadSize * cos + arrowHeadSize * sin,
-                            tip.getY() - arrowHeadSize * sin - arrowHeadSize * cos
-                    );
-                    right = new Point2D(
-                            tip.getX() - arrowHeadSize * cos - arrowHeadSize * sin,
-                            tip.getY() - arrowHeadSize * sin + arrowHeadSize * cos
-                    );
-                    break;
-            }
+            // Otras formas de flechas pueden ser añadidas aquí.
+            default:
+                // Forma por defecto de la flecha si no se especifica un tipo conocido.
+                left = new Point2D(
+                        tip.getX() - arrowHeadSize * cos + arrowHeadSize * sin,
+                        tip.getY() - arrowHeadSize * sin - arrowHeadSize * cos
+                );
+                right = new Point2D(
+                        tip.getX() - arrowHeadSize * cos - arrowHeadSize * sin,
+                        tip.getY() - arrowHeadSize * sin + arrowHeadSize * cos
+                );
+                break;
+        }
 
         // Agregar los elementos a la lista
         elements.add(new MoveTo(tip.getX(), tip.getY()));
@@ -748,7 +730,7 @@ public class UmlEditorController {
 
         return elements;
     }
-      
+
     private Point2D getBorderPoint(VBox classBox, Point2D target) {
         double centerX = classBox.getLayoutX() + classBox.getWidth() / 2.0;
         double centerY = classBox.getLayoutY() + classBox.getHeight() / 2.0;
@@ -784,13 +766,13 @@ public class UmlEditorController {
         }
         return null;
     }
-    
+
     private Point2D getClassCenter(VBox classBox) {
         double centerX = classBox.getLayoutX() + classBox.getWidth() / 2.0;
         double centerY = classBox.getLayoutY() + classBox.getHeight() / 2.0;
         return new Point2D(centerX, centerY);
     }
-    
+
     // Posicion de etiqueta de cardinalidad basándose en la dirección de la línea de la relación
     private void placeCardinalityLabel(UmlRelation relation, Point2D startPos, Point2D endPos) {
         Label cardinalityLabel = relation.getCardinalityLabel();
@@ -821,17 +803,107 @@ public class UmlEditorController {
         cardinalityLabel.setLayoutX(labelX);
         cardinalityLabel.setLayoutY(labelY);
 
-        cardinalityLabel.setStyle("-fx-background-color: white; " +
-                                  "-fx-padding: 3px; " +
-                                  "-fx-background-radius: 5px; " +
-                                  "-fx-border-radius: 5px; " +
-                                  "-fx-alignment: center;");
+        cardinalityLabel.setStyle("-fx-background-color: white; "
+                + "-fx-padding: 3px; "
+                + "-fx-background-radius: 5px; "
+                + "-fx-border-radius: 5px; "
+                + "-fx-alignment: center;");
 
         // Asegurarse de que la etiqueta se agregue al área de dibujo si aún no está presente
         if (!drawingArea.getChildren().contains(cardinalityLabel)) {
-                drawingArea.getChildren().add(cardinalityLabel);
+            drawingArea.getChildren().add(cardinalityLabel);
         }
     }
 
-    
+
+    // Método para actualizar la vista en el área de dibujo
+    public void actualizarVista() {
+        // Limpiar el área de dibujo
+        drawingArea.getChildren().clear();
+
+        // Dibujar cada clase UML en el área de dibujo
+        for (UmlClass umlClass : classes) {
+            drawClassOnCanvas(umlClass);
+        }
+
+        // Dibujar cada relación UML en el área de dibujo
+        for (UmlRelation relation : relations) {
+            drawRelation(relation);
+        }
+    }
+
+    // Método para guardar el esquema
+    @FXML
+    public void handleSave() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Guardar esquema UML");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivo XML", "*.xml"));
+        File file = fileChooser.showSaveDialog(null);
+
+        if (file != null) {
+            try {
+                Serializer serializer = new Serializer();
+                Document doc = serializer.serializeToXML(classes, relations);
+                serializer.saveXMLToFile(doc, file.getAbsolutePath());
+                System.out.println("Esquema guardado en " + file.getAbsolutePath());
+            } catch (Exception e) {
+                System.err.println("Error al guardar el archivo: " + e.getMessage());
+            }
+        }
+    }
+
+    // Método para cargar el esquema
+    @FXML
+    public void handleLoad() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Cargar esquema UML");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivo XML", "*.xml"));
+        File file = fileChooser.showOpenDialog(null);
+
+        if (file != null) {
+            try {
+                Serializer serializer = new Serializer();
+                // Deserializar clases y relaciones desde el archivo
+                List<UmlClass> loadedClasses = serializer.deserializeFromXML(file.getAbsolutePath());
+                List<UmlRelation> loadedRelations = serializer.deserializeRelationsFromXML(file.getAbsolutePath(), loadedClasses);
+
+                // Limpiar datos actuales
+                classes.clear();
+                relations.clear();
+                drawingArea.getChildren().clear();
+
+                // Añadir clases al lienzo
+                classes.addAll(loadedClasses);
+                for (UmlClass umlClass : classes) {
+                    drawClassOnCanvas(umlClass); // Método que asegura que las clases se posicionan gráficamente en el lienzo
+                }
+
+                // Añadir relaciones al lienzo
+                relations.addAll(loadedRelations);
+                for (UmlRelation relation : relations) {
+                    drawRelation(relation); // Método que posiciona las relaciones gráficamente
+                }
+
+                // Forzar actualización de posiciones de relaciones
+                for (UmlClass umlClass : classes) {
+                    updateRelationsForClass(umlClass); // Este método actualiza las posiciones de las flechas
+                }
+
+                // Actualizar la vista
+                actualizarVista();
+
+                // Actualizar las ListViews de clases y métodos
+                updateClassListView();
+                if (!classes.isEmpty()) {
+                    updateMethodListView(classes.get(0));
+                }
+
+                System.out.println("Esquema cargado desde " + file.getAbsolutePath());
+            } catch (Exception e) {
+                System.err.println("Error al cargar el archivo: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

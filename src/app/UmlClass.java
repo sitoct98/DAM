@@ -7,6 +7,8 @@ public class UmlClass {
     private String name;
     private List<UmlAttribute> attributes;
     private List<UmlMethod> methods;
+    private double posX;
+    private double posY;
 
     public UmlClass(String name) {
         this.name = name;
@@ -21,6 +23,22 @@ public class UmlClass {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public double getPosX() {
+        return posX;
+    }
+
+    public void setPosX(double posX) {
+        this.posX = posX;
+    }
+
+    public double getPosY() {
+        return posY;
+    }
+
+    public void setPosY(double posY) {
+        this.posY = posY;
     }
 
     public List<UmlAttribute> getAttributes() {

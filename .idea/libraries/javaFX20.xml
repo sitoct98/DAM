@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="javaFX20">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/nblibraries.properties/javaFX20/javafx.graphics.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/nblibraries.properties/javaFX20/javafx.media.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/nblibraries.properties/javaFX20/javafx.base.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/nblibraries.properties/javaFX20/javafx.web.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/nblibraries.properties/javaFX20/javafx.swing.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/nblibraries.properties/javaFX20/javafx.fxml.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/nblibraries.properties/javaFX20/javafx.controls.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/nblibraries.properties/javaFX20/javafx-swt.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
