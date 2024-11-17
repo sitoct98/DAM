@@ -2,6 +2,7 @@ package controlador;
 
 import app.*;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -85,44 +86,50 @@ public class UmlEditorController {
     }
 
     // Boton añadir relacion
-    @FXML
-    private void handleAddRelation() {
-        // Pedir al usuario que seleccione el tipo de relación primero
-        ChoiceDialog<UmlRelationType> dialogType = new ChoiceDialog<>(UmlRelationType.ASSOCIATION, UmlRelationType.values());
-        dialogType.setTitle("Seleccionar Tipo de Relación");
-        dialogType.setHeaderText("Seleccione el tipo de relación que desea crear");
-        dialogType.setContentText("Tipo de Relación:");
-        Optional<UmlRelationType> resultType = dialogType.showAndWait();
+@FXML
+private void handleAddRelation() {
+    // Pedir al usuario que seleccione el tipo de relación primero
+    ChoiceDialog<UmlRelationType> dialogType = new ChoiceDialog<>(UmlRelationType.ASSOCIATION, UmlRelationType.values());
+    dialogType.setTitle("Seleccionar Tipo de Relación");
+    dialogType.setHeaderText("Seleccione el tipo de relación que desea crear");
+    dialogType.setContentText("Tipo de Relación:");
+    Optional<UmlRelationType> resultType = dialogType.showAndWait();
 
-        if (!resultType.isPresent()) {
-            return; // Salir si no se selecciona un tipo de relación
-        }
+    if (!resultType.isPresent()) {
+        return; // Salir si no se selecciona un tipo de relación
+    }
 
-        UmlRelationType selectedType = resultType.get();
+    UmlRelationType selectedType = resultType.get();
 
-        // Pedir al usuario que seleccione las clases en función del tipo de relación seleccionado
-        UmlClass fromClass = null;
-        UmlClass toClass = null;
+    // Pedir al usuario que seleccione las clases en función del tipo de relación seleccionado
+    final String fromClassName;
+    final String toClassName;
 
-        // Switch para variar el dialogo segun la relación
-        switch (selectedType) {
-            case INHERITANCE:
-                fromClass = chooseClass("Seleccionar Superclase", "Seleccione la superclase:");
-                toClass = chooseClass("Seleccionar Subclase", "Seleccione la subclase:");
-                break;
-            case ASSOCIATION:
-            case AGGREGATION:
-            case COMPOSITION:
-            case REALIZATION:
-            case DEPENDENCY:
-                // Para los otros tipos, el orden de las clases podría no ser importante
-                fromClass = chooseClass("Seleccionar Clase Origen", "Seleccione la clase de origen:");
-                toClass = chooseClass("Seleccionar Clase Destino", "Seleccione la clase de destino:");
-                break;
-        }
+    // Switch para variar el dialogo segun la relación
+    switch (selectedType) {
+        case INHERITANCE:
+            fromClassName = chooseClass("Seleccionar Superclase", "Seleccione la superclase:");
+            toClassName = chooseClass("Seleccionar Subclase", "Seleccione la subclase:");
+            break;
+        case ASSOCIATION:
+        case AGGREGATION:
+        case COMPOSITION:
+        case REALIZATION:
+        case DEPENDENCY:
+            // Para los otros tipos, el orden de las clases podría no ser importante
+            fromClassName = chooseClass("Seleccionar Clase Origen", "Seleccione la clase de origen:");
+            toClassName = chooseClass("Seleccionar Clase Destino", "Seleccione la clase de destino:");
+            break;
+        default:
+            return; // Salir si no se selecciona un tipo de relación válido
+    }
 
-        // Verificar que las clases han sido seleccionadas y no son la misma
-        if (fromClass != null && toClass != null && !fromClass.equals(toClass)) {
+    // Verificar que las clases han sido seleccionadas y no son la misma
+    if (fromClassName != null && toClassName != null && !fromClassName.equals(toClassName)) {
+        UmlClass fromClass = classes.stream().filter(c -> c.getName().equals(fromClassName)).findFirst().orElse(null);
+        UmlClass toClass = classes.stream().filter(c -> c.getName().equals(toClassName)).findFirst().orElse(null);
+
+        if (fromClass != null && toClass != null) {
             // Solicitar la cardinalidad
             TextInputDialog cardinalityDialog = new TextInputDialog();
             cardinalityDialog.setTitle("Cardinalidad de la Relación");
@@ -136,10 +143,11 @@ public class UmlEditorController {
             UmlRelation newRelation = new UmlRelation(fromClass, toClass, selectedType, cardinality);
             relations.add(newRelation);
             drawRelation(newRelation);
-        } else {
-            showAlert("Error de Relación", "Debe seleccionar dos clases diferentes para crear una relación.");
         }
+    } else {
+        showAlert("Error de Relación", "Debe seleccionar dos clases diferentes para crear una relación.");
     }
+}
 
     // Boton eliminar relacion
     @FXML
@@ -151,8 +159,8 @@ public class UmlEditorController {
             // Crear una lista de representaciones String de cada relación
             List<String> relationDescriptions = relations.stream()
                     .map(relation -> relation.getFromClass().getName() + " -> "
-                    + relation.getToClass().getName() + " : "
-                    + relation.getType())
+                            + relation.getToClass().getName() + " : "
+                            + relation.getType())
                     .collect(Collectors.toList());
 
             ChoiceDialog<String> dialog = new ChoiceDialog<>(null, relationDescriptions);
@@ -183,15 +191,14 @@ public class UmlEditorController {
     }
 
     // Metodo auxiliar para el dialogo de handleAddRelation
-    private UmlClass chooseClass(String title, String header) {
-        ChoiceDialog<UmlClass> dialog = new ChoiceDialog<>(null, classes);
-        dialog.setTitle(title);
-        dialog.setHeaderText(header);
-        dialog.setContentText("Clase:");
-        Optional<UmlClass> result = dialog.showAndWait();
-        return result.orElse(null);
-    }
-
+private String chooseClass(String title, String header) {
+    ChoiceDialog<String> dialog = new ChoiceDialog<>(null, classes.stream().map(UmlClass::getName).collect(Collectors.toList()));
+    dialog.setTitle(title);
+    dialog.setHeaderText(header);
+    dialog.setContentText("Clase:");
+    Optional<String> result = dialog.showAndWait();
+    return result.orElse(null);
+}
     // Menu click derecho
     private void showContextMenu(UmlClass umlClass, double screenX, double screenY) {
         // Si hay un menu abierto cierralo
@@ -487,75 +494,74 @@ public class UmlEditorController {
 
     private Point2D dragAnchor = new Point2D(0, 0);
 
-private void drawClassOnCanvas(UmlClass umlClass) {
-    VBox classBox = new VBox();
-    classBox.setStyle("-fx-border-color: black; -fx-background-color: lightgray;");
-    classBox.setUserData(umlClass);
+    private void drawClassOnCanvas(UmlClass umlClass) {
+        VBox classBox = new VBox();
+        classBox.setStyle("-fx-border-color: " + umlClass.getBorderColor() + "; -fx-border-width: " + umlClass.getBorderWidth() + "px; -fx-background-color: lightgray;");
+        classBox.setUserData(umlClass);
 
-    // Usar la posición guardada en lugar de centrar la clase en el lienzo
-    classBox.setLayoutX(umlClass.getPosX());
-    classBox.setLayoutY(umlClass.getPosY());
+        // Use the saved position instead of centering the class on the canvas
+        classBox.setLayoutX(umlClass.getPosX());
+        classBox.setLayoutY(umlClass.getPosY());
 
-    Label classNameLabel = new Label(umlClass.getName());
-    classNameLabel.setStyle("-fx-font-weight: bold; -fx-padding: 5;");
-    classBox.getChildren().add(classNameLabel);
+        Label classNameLabel = new Label(umlClass.getName());
+        classNameLabel.setStyle("-fx-font-weight: bold; -fx-padding: 5;");
+        classBox.getChildren().add(classNameLabel);
 
-    VBox methodBox = new VBox();
-    methodBox.setStyle("-fx-padding: 5;");
-    for (UmlMethod method : umlClass.getMethods()) {
-        Label methodLabel = new Label(method.getName() + "()");
-        methodBox.getChildren().add(methodLabel);
-    }
-    classBox.getChildren().add(methodBox);
-
-    // Manejar el arrastre de clase solo con clic izquierdo
-    classBox.setOnMousePressed(event -> {
-        if (event.getButton() == MouseButton.PRIMARY) {
-            dragAnchor = new Point2D(event.getSceneX() - classBox.getLayoutX(), event.getSceneY() - classBox.getLayoutY());
-            event.consume();
+        VBox methodBox = new VBox();
+        methodBox.setStyle("-fx-padding: 5;");
+        for (UmlMethod method : umlClass.getMethods()) {
+            Label methodLabel = new Label(method.getName() + "()");
+            methodBox.getChildren().add(methodLabel);
         }
-    });
+        classBox.getChildren().add(methodBox);
 
-    classBox.setOnMouseDragged(event -> {
-        try {
+        // Handle dragging of the class only with the left click
+        classBox.setOnMousePressed(event -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                dragAnchor = new Point2D(event.getSceneX() - classBox.getLayoutX(), event.getSceneY() - classBox.getLayoutY());
+                event.consume();
+            }
+        });
+
+        classBox.setOnMouseDragged(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 double newX = event.getSceneX() - dragAnchor.getX();
                 double newY = event.getSceneY() - dragAnchor.getY();
 
-                // Asegúrate de que el movimiento se mantenga dentro del área de dibujo
+                // Ensure the movement stays within the drawing area
                 newX = Math.max(newX, 0);
                 newY = Math.max(newY, 0);
                 newX = Math.min(newX, drawingArea.getWidth() - classBox.getWidth());
                 newY = Math.min(newY, drawingArea.getHeight() - classBox.getHeight());
 
-                // Actualiza la posición del VBox de la clase
+                // Update the position of the VBox representing the class
                 classBox.setLayoutX(newX);
                 classBox.setLayoutY(newY);
 
-                // Actualiza la posición en el objeto UmlClass
+                // Update the position in the UmlClass object
                 umlClass.setPosX(newX);
                 umlClass.setPosY(newY);
 
-                // Actualiza las relaciones de esta clase
+                // Update the relations of this class
                 updateRelationsForClass(umlClass);
 
                 event.consume();
             }
-        } catch (Exception e) {
-            showAlert("Error al mover la clase", "No se puede mover la clase: " + e.getLocalizedMessage());
-        }
-    });
+        });
 
-    // Asignar el menú contextual directamente al VBox para el clic derecho
-    classBox.setOnMouseClicked(event -> {
-        if (event.getButton() == MouseButton.SECONDARY) {
-            showContextMenu(umlClass, event.getScreenX(), event.getScreenY());
-            event.consume();
-        }
-    });
+        // Assign the context menu directly to the VBox for right-click
+        classBox.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                showContextMenu(umlClass, event.getScreenX(), event.getScreenY());
+                event.consume();
+            } else if (event.getButton() == MouseButton.PRIMARY) {
+                // Select the class in the ListView when left-clicked
+                classListView.getSelectionModel().select(umlClass.getName());
+            }
+        });
 
-    drawingArea.getChildren().add(classBox);
-}
+        drawingArea.getChildren().add(classBox);
+    }
 
     // Apariencia de la línea
     private void drawRelation(UmlRelation relation) {
@@ -902,6 +908,39 @@ private void drawClassOnCanvas(UmlClass umlClass) {
             } catch (Exception e) {
                 System.err.println("Error al cargar el archivo: " + e.getMessage());
                 e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    private void handleColorChange(ActionEvent event) {
+        Button clickedButton = (Button) event.getSource();
+        String color = clickedButton.getStyle().split(":")[1].replace(";", "").trim();
+        UmlClass selectedClass = getSelectedClass();
+        if (selectedClass != null) {
+            changeClassBorderColor(selectedClass, color);
+        }
+    }
+
+    private UmlClass getSelectedClass() {
+        String selectedClassName = classListView.getSelectionModel().getSelectedItem();
+        if (selectedClassName != null) {
+            for (UmlClass umlClass : classes) {
+                if (umlClass.getName().equals(selectedClassName)) {
+                    return umlClass;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void changeClassBorderColor(UmlClass umlClass, String color) {
+        for (Node node : drawingArea.getChildren()) {
+            if (node instanceof VBox && umlClass.equals(node.getUserData())) {
+                VBox classBox = (VBox) node;
+                classBox.setStyle("-fx-border-color: " + color + "; -fx-border-width: " + umlClass.getBorderWidth() + "px; -fx-background-color: lightgray;");
+                umlClass.setBorderColor(color);
+                break;
             }
         }
     }

@@ -5,6 +5,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -19,8 +20,6 @@ import java.util.List;
 
 public class Serializer {
 
-
-
     // Método para guardar el XML en un archivo
     public void saveXMLToFile(Document doc, String filePath) throws TransformerException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -29,8 +28,6 @@ public class Serializer {
         StreamResult result = new StreamResult(new File(filePath));
         transformer.transform(source, result);
     }
-
-
 
     public Document serializeToXML(List<UmlClass> classes, List<UmlRelation> relations) throws ParserConfigurationException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -45,6 +42,8 @@ public class Serializer {
             classElement.setAttribute("name", umlClass.getName());
             classElement.setAttribute("posX", String.valueOf(umlClass.getPosX()));
             classElement.setAttribute("posY", String.valueOf(umlClass.getPosY()));
+            classElement.setAttribute("borderColor", umlClass.getBorderColor());
+            classElement.setAttribute("borderWidth", String.valueOf(umlClass.getBorderWidth())); // Añadir ancho del borde
             rootElement.appendChild(classElement);
 
             for (UmlAttribute attribute : umlClass.getAttributes()) {
@@ -100,9 +99,13 @@ public class Serializer {
                 String className = classElement.getAttribute("name");
                 double posX = Double.parseDouble(classElement.getAttribute("posX"));
                 double posY = Double.parseDouble(classElement.getAttribute("posY"));
+                String borderColor = classElement.getAttribute("borderColor");
+                double borderWidth = Double.parseDouble(classElement.getAttribute("borderWidth")); // Leer ancho del borde
                 UmlClass umlClass = new UmlClass(className);
                 umlClass.setPosX(posX);
                 umlClass.setPosY(posY);
+                umlClass.setBorderColor(borderColor);
+                umlClass.setBorderWidth(borderWidth); // Establecer ancho del borde
 
                 NodeList attributeNodes = classElement.getElementsByTagName("Attribute");
                 for (int j = 0; j < attributeNodes.getLength(); j++) {
@@ -140,7 +143,6 @@ public class Serializer {
 
         return classes;
     }
-
 
     public List<UmlRelation> deserializeRelationsFromXML(String filePath, List<UmlClass> classes) throws Exception {
         File xmlFile = new File(filePath);

@@ -9,6 +9,8 @@ public class UmlClass {
     private List<UmlMethod> methods;
     private double posX;
     private double posY;
+    private String borderColor = "black"; // Color por defecto
+    private double borderWidth = 1.0; // Ancho del borde por defecto
 
     public UmlClass(String name) {
         this.name = name;
@@ -41,6 +43,22 @@ public class UmlClass {
         this.posY = posY;
     }
 
+    public String getBorderColor() {
+        return borderColor;
+    }
+
+    public void setBorderColor(String borderColor) {
+        this.borderColor = borderColor;
+    }
+
+    public double getBorderWidth() {
+        return borderWidth;
+    }
+
+    public void setBorderWidth(double borderWidth) {
+        this.borderWidth = borderWidth;
+    }
+
     public List<UmlAttribute> getAttributes() {
         return new ArrayList<>(attributes); // Devuelve una copia para encapsulamiento
     }
@@ -49,7 +67,6 @@ public class UmlClass {
         return new ArrayList<>(methods); // Devuelve una copia para encapsulamiento
     }
 
-    // Métodos para manejar atributos
     public void addAttribute(UmlAttribute attribute) {
         attributes.add(attribute);
     }
@@ -58,7 +75,6 @@ public class UmlClass {
         attributes.remove(attribute);
     }
 
-    // Métodos para manejar métodos
     public void addMethod(UmlMethod method) {
         methods.add(method);
     }
@@ -67,7 +83,6 @@ public class UmlClass {
         methods.remove(method);
     }
 
-    // Método para representar la clase como un String
     @Override
     public String toString() {
         return "UmlClass{" +
